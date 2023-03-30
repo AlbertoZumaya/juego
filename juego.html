@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Mi juego con estilo</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<style>
+		body {
+			background-image: linear-gradient(to right, blueviolet, yellow);
+			color: #fff;
+			font-family: Arial, sans-serif;
+			margin: 0;
+			padding: 0;
+		}
+
+		.container {
+			width: 800px;
+			margin: 0 auto;
+			text-align: center;
+			padding: 20px;
+			box-sizing: border-box;
+		}
+
+		h1 {
+			font-size: 48px;
+			margin-top: 0;
+		}
+
+		canvas {
+			display: block;
+			margin: 0 auto;
+			border: 1px solid #fff;
+		}
+	</style>
+</head>
+<body>
+	<div class="container">
+		<h1>Mi juego con estilo</h1>
+		<canvas id="myCanvas" width="800" height="600"></canvas>
+	</div>
+		
+	<canvas id="myCanvas" width="480" height="320"></canvas>
+
+	<script>
+		var canvas = document.getElementById("myCanvas");
+		var ctx = canvas.getContext("2d");
+
+		// Definir variables del juego
+		var x = canvas.width / 2;
+		var y = canvas.height - 30;
+		var dx = 2;
+		var dy = -2;
+		var ballRadius = 10;
+		var paddleHeight = 10;
+		var paddleWidth = 75;
+		var paddleX = (canvas.width - paddleWidth) / 2;
+		var rightPressed = false;
+		var leftPressed = false;
+
+		// Dibujar bola
+		function drawBall() {
+			ctx.beginPath();
+			ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
+			ctx.fillStyle = "#0095DD";
+			ctx.fill();
+			ctx.closePath();
+		}
+
+		// Dibujar pala
+		function drawPaddle() {
+			ctx.beginPath();
+			ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
+			ctx.fillStyle = "#0095DD";
+			ctx.fill();
+			ctx.closePath();
+		}
+
+		// Dibujar juego
+		function draw() {
+			ctx.clearRect(0, 0, canvas.width, canvas.height);
+			drawBall();
+			drawPaddle();
+
+			// Hacer rebotar la bola en las paredes laterales
+			if (x + dx > canvas.width - ballRadius || x + dx < ballRadius) {
+				dx = -dx;
+			}
+			// Hacer rebotar la bola en la pared superior
+			if (y + dy < ballRadius) {
+				dy = -dy;
+			} 
+			// Hacer que la bola caiga al suelo y termine el juego si la bola toca el suelo
+			else if (y + dy > canvas.height - ballRadius) {
+				if (x > paddleX && x < paddleX + paddleWidth) {
+					dy = -dy;
+				}
+				else {
+					alert("Juego terminado");
+					document.location.reload();
+				}
+			}
+
+			// Mover la pala a la izquierda o derecha cuando se presionan las teclas de flecha
+			if (rightPressed && paddleX < canvas.width - paddleWidth) {
+				paddleX += 7;
+			}
+			else if (leftPressed && paddleX > 0) {
+				paddleX -= 7;
+			}
+
+			x += dx;
+			y += dy;
+		}
+
+		// Detectar la pulsación de las teclas de flecha
+		document.addEventListener("keydown", keyDownHandler, false);
+		document.addEventListener("keyup", keyUpHandler, false);
+
+		function keyDownHandler(e) {
+			if (e.keyCode == 39) {
+				rightPressed = true;
+			}
+			else if (e.keyCode == 37) {
+				leftPressed = true;
+			}
+		}
+
+		function keyUpHandler(e) {
+			if (e.keyCode == 39) {
+				rightPressed = false;
+			}
+        else if (e.keyCode == 37) {
+            leftPressed = false;
+            }
+        }
+
+// Actualizar el juego cada 10 milisegundos
+         setInterval(draw, 10);
+
+	</script>
+</body>
+</html>
